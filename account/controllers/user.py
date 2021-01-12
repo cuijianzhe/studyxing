@@ -15,7 +15,7 @@ def login(username,password,is_ldap=False):
     obj = base_query.first()
     if not obj:
         raise errors.CommonError('用户名或密码错误')
-    if not obj.check_password(passwoed):
+    if not obj.check_password(password):
         raise errors.CommonError('用户名或密码错误')
     if obj.status == UserModel.ST_FORBIDDEN:
         raise errors.CommonError('用户被禁止登录')
