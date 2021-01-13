@@ -176,3 +176,5 @@ class RolePermissionModel(BaseModel):
 
     class Meta:
         db_table = 'role_permission'
+
+
