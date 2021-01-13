@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# @File  : user.py
-# @Author: cuijianzhe
-# @Date  : 2021/1/12
-# @Desc  :
 
 from base.api import BaseApi
 from account.controllers import user as user_ctl
