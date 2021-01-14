@@ -4,8 +4,10 @@ from django.db.models import Q
 from base import errors
 from base import controllers as base_ctl
 from account.models import UserModel
+from utils.onlyone import onlyone
 
-def login(username,password,is_ldap=False):
+
+def login(username, password, is_ldap=False):
     '''
     登录
     '''
@@ -18,14 +20,14 @@ def login(username,password,is_ldap=False):
     if not obj.check_password(password):
         raise errors.CommonError('用户名或密码错误')
     if obj.status == UserModel.ST_FORBIDDEN:
-        raise errors.CommonError('用户被禁止登录')
-
+        raise errors.CommonError('用户已被禁止登录')
     data = {
-        'token':obj.gen_token(),
+        'token': obj.gen_token(),
     }
     return data
 
 
+@onlyone.lock(UserModel.model_sign, 'username', 'username', 30)
 def create_user(username, password, name=None, phone=None, email=None, operator=None):
     '''
     创建用户
@@ -47,6 +49,8 @@ def create_user(username, password, name=None, phone=None, email=None, operator=
     data = user_obj.to_dict()
     return data
 
+
+@onlyone.lock(UserModel.model_sign, 'obj_id', 'obj_id', 30)
 def update_user(obj_id, name=None, password=None, phone=None, email=None, operator=None):
     '''
     编辑用户
@@ -69,6 +73,7 @@ def update_user(obj_id, name=None, password=None, phone=None, email=None, operat
     return data
 
 
+@onlyone.lock(UserModel.model_sign, 'obj_id', 'obj_id', 30)
 def delete_user(obj_id, operator=None):
     '''
     删除用户
@@ -88,3 +93,21 @@ def is_admin(user_obj):
     if user_obj.typ == UserModel.TYP_NORMAL and user_obj.username == 'admin':
         return True
     return False
+
+
+def get_users(keyword=None, page_num=None, page_size=None, operator=None):
+    '''
+    获取用户列表
+    '''
+    base_query = UserModel.objects
+    if keyword:
+        base_query = base_query.filter(Q(username__icontains=keyword)|
+                                       Q(name__icontains=keyword))
+    total = base_query.count()
+    objs = base_ctl.query_objs_by_page(base_query, page_num, page_size)
+    data_list = [obj.to_dict() for obj in objs]
+    data = {
+        'total': total,
+        'data_list': data_list,
+    }
+    return data

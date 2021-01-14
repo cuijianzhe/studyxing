@@ -9,6 +9,9 @@ class UserModel(BaseModel):
     '''
     用户表
     '''
+    model_name = '用户'
+    model_sign = 'user'
+
     TYP_NORMAL = 10
     TYP_LDAP = 20
     TYP_CHOICES = (
@@ -68,6 +71,9 @@ class RoleModel(BaseModel):
     '''
     角色表
     '''
+    model_name = '角色'
+    model_sign = 'role'
+
     TYP_SYSTEM = 10
     TYP_NORMAL = 20
     TYP_CHOICES = (
@@ -75,8 +81,9 @@ class RoleModel(BaseModel):
         (TYP_NORMAL, '普通角色'),
     )
 
-    name = models.CharField('角色名', max_length=128)
+    name = models.CharField('角色名', max_length=32)
     typ = models.IntegerField('类型', choices=TYP_CHOICES, default=TYP_NORMAL)
+    sign = models.CharField('标识', max_length=32)
 
     class Meta:
         db_table = 'role'
@@ -86,6 +93,9 @@ class RoleUserModel(BaseModel):
     '''
     角色用户关系表
     '''
+    model_name = '角色关联用户'
+    model_sign = 'role_user'
+
     role = models.ForeignKey(RoleModel, on_delete=models.CASCADE)
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
 
@@ -97,8 +107,11 @@ class DepartmentModel(BaseModel):
     '''
     部门
     '''
-    name = models.CharField('名称', max_length=128)
-    sign = models.CharField('标识', max_length=128)
+    model_name = '部门'
+    model_sign = 'department'
+
+    name = models.CharField('名称', max_length=32)
+    sign = models.CharField('标识', max_length=32)
 
     class Meta:
         db_table = 'department'
@@ -108,6 +121,9 @@ class DepartmentUserModel(BaseModel):
     '''
     部门与用户
     '''
+    model_name = '部门关联用户'
+    model_sign = 'department_user'
+
     TYP_MANAGER = 10
     TYP_MEMBER = 20
     TYP_CHOICES = (
@@ -127,8 +143,11 @@ class ModModel(BaseModel):
     '''
     模块表
     '''
-    name = models.CharField('模块名', max_length=128)
-    sign = models.CharField('唯一标识', max_length=128)
+    model_name = '模块'
+    model_sign = 'mod'
+
+    name = models.CharField('模块名', max_length=32)
+    sign = models.CharField('唯一标识', max_length=32)
     rank = models.IntegerField('排序')
 
     class Meta:
@@ -139,6 +158,9 @@ class PermissionModel(BaseModel):
     '''
     权限
     '''
+    model_name = '权限'
+    model_sign = 'permission'
+
     TYP_OP = 10
     TYP_DATA = 20
     TYP_CHOICES = (
@@ -160,6 +182,9 @@ class RoleModModel(BaseModel):
     '''
     角色模块
     '''
+    model_name = '角色关联模块'
+    model_sign = 'role_mod'
+
     role = models.ForeignKey(RoleModel, on_delete=models.CASCADE)
     mod = models.ForeignKey(ModModel, on_delete=models.CASCADE)
 
@@ -171,10 +196,11 @@ class RolePermissionModel(BaseModel):
     '''
     角色权限
     '''
+    model_name = '角色关联权限'
+    model_sign = 'role_permission'
+
     role = models.ForeignKey(RoleModel, on_delete=models.CASCADE)
     permission = models.ForeignKey(PermissionModel, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'role_permission'
-
-

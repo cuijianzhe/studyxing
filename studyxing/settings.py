@@ -133,3 +133,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+REDIS_HOST = '192.168.51.202'
+REDIS_PORT = 6379
+
+
+ONLYONE_REDIS_HOST = REDIS_HOST
+ONLYONE_REDIS_PORT = REDIS_PORT
+ONLYONE_REDIS_DB = 4
