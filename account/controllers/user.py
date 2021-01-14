@@ -111,3 +111,19 @@ def get_users(keyword=None, page_num=None, page_size=None, operator=None):
         'data_list': data_list,
     }
     return data
+
+def get_user_info(obj_id, operator=None):
+    '''
+    获取用户详情信息
+    '''
+    user_data = get_user(obj_id)
+    mod_objs = role_ctl.get_mods_by_user_id(obj_id)
+    mod_data = [obj.to_dict() for obj in mod_objs]
+    permission_objs = role_ctl.get_permissions_by_user_id(obj_id)
+    permission_data = [obj.to_dict() for obj in permission_objs]
+    data = {
+        'user': user_data,
+        'mods': mod_data,
+        'permissions': permission_data,
+    }
+    return data

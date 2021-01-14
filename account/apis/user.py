@@ -1,20 +1,28 @@
-
 from base.api import BaseApi
 from account.controllers import user as user_ctl
+
 
 class LoginApi(BaseApi):
     NEED_LOGIN = False
 
     need_params = {
-        'username':('用户名','required str 32'),
-        'password':('密码','required str 32'),
-        'is_ldap':('是否LDAP登录','required bool'),
+        'username': ('用户名', 'required str 32'),
+        'password': ('密码', 'required str 32'),
+        'is_ldap': ('是否LDAP登录', 'required bool'),
     }
-    def post(self,request,params):
+    def post(self, request, params):
         data = user_ctl.login(**params)
         return data
-class ListUserApi(BaseApi):
-    pass
+
+
+class LogoutApi(BaseApi):
+
+    need_params = {
+    }
+    def post(self, request, params):
+        # TODO: 如果token写入了redis，可以在这里清除
+        pass
+
 
 class UserApi(BaseApi):
     NEED_PERMISSION = False
@@ -63,4 +71,28 @@ class DeleteUserApi(BaseApi):
     }
     def post(self, request, params):
         data = user_ctl.delete_user(**params)
+        return data
+
+
+class ListUserApi(BaseApi):
+    NEED_PERMISSION = False
+
+    need_params = {
+        'keyword': ('关键词', 'optional str 16'),
+        'page_num': ('页码', 'optional int'),
+        'page_size': ('页容量', 'optional int'),
+    }
+    def post(self, request, params):
+        data = user_ctl.get_users(**params)
+        return data
+
+
+class CurrentUserApi(BaseApi):
+    NEED_PERMISSION = False
+
+    need_params = {
+    }
+    def post(self, request, params):
+        params['obj_id'] = request.user_id
+        data = user_ctl.get_user_info(**params)
         return data
