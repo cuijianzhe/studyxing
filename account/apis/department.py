@@ -6,7 +6,7 @@ class CreateDepartmentApi(BaseApi):
 
     need_params = {
         'name': ('名称', 'required str 16'),
-        'sign': ('标识', 'required str 16'),
+        'sign': ('标识', 'required str 32'),
     }
     def post(self, request, params):
         data = department_ctl.create_department(**params)
@@ -18,7 +18,7 @@ class UpdateDepartmentApi(BaseApi):
     need_params = {
         'obj_id': ('部门ID', 'required int'),
         'name': ('名称', 'required str 16'),
-        'sign': ('标识', 'required str 16'),
+        'sign': ('标识', 'required str 32'),
     }
     def post(self, request, params):
         data = department_ctl.update_department(**params)
@@ -39,7 +39,7 @@ class ListDepartmentApi(BaseApi):
     NEED_PERMISSION = False
 
     need_params = {
-        'keyword': ('关键词', 'optional str 16'),
+        'keyword': ('关键词', 'optional str 32'),
         'page_num': ('页码', 'optional int'),
         'page_size': ('页容量', 'optional int'),
     }
@@ -69,6 +69,18 @@ class CreateDepartmentUserApi(BaseApi):
     }
     def post(self, request, params):
         data = department_ctl.create_department_user(**params)
+        return data
+
+
+class UpdateDepartmentUserApi(BaseApi):
+
+    need_params = {
+        'user_id': ('用户ID', 'required int'),
+        'department_id': ('部门ID', 'required int'),
+        'typ': ('类型', 'required int'),
+    }
+    def post(self, request, params):
+        data = department_ctl.update_department_user(**params)
         return data
 
 

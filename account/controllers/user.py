@@ -104,6 +104,8 @@ def get_users(keyword=None, page_num=None, page_size=None, operator=None):
     if keyword:
         base_query = base_query.filter(Q(username__icontains=keyword)|
                                        Q(name__icontains=keyword))
+    # 排除超级管理员用户
+    base_query = base_query.exclude(username='admin')
     total = base_query.count()
     objs = base_ctl.query_objs_by_page(base_query, page_num, page_size)
     data_list = [obj.to_dict() for obj in objs]
@@ -129,7 +131,7 @@ def get_user_info(obj_id, operator=None):
     '''
     user_data = get_user(obj_id)
     if user_data.get('username') == 'admin':
-        mods = ['mod']
+        mods = ['mod', 'department', 'role', 'user']
         permissions = ['admin']
     else:
         mod_objs = role_ctl.get_mods_by_user_id(obj_id)
@@ -156,3 +158,37 @@ def has_permission(user_id, permission):
     if permission in permissions:
         return True
     return False
+
+
+def get_roles_by_user_id(obj_id, operator=None):
+    '''
+    获取用户关联角色列表
+    '''
+    objs = RoleUserModel.objects.filter(user_id=obj_id).select_related('role').all()
+    data_list = []
+    for obj in objs:
+        data = obj.to_dict()
+        data['role'] = obj.role.to_dict()
+        data_list.append(data)
+    data = {
+        'total': len(data_list),
+        'data_list': data_list,
+    }
+    return data
+
+
+def get_departments_by_user_id(obj_id, operator=None):
+    '''
+    获取用户关联部门列表
+    '''
+    objs = DepartmentUserModel.objects.filter(user_id=obj_id).select_related('department').all()
+    data_list = []
+    for obj in objs:
+        data = obj.to_dict()
+        data['department'] = obj.department.to_dict()
+        data_list.append(data)
+    data = {
+        'total': len(data_list),
+        'data_list': data_list,
+    }
+    return data
