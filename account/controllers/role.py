@@ -153,7 +153,19 @@ def get_role_users(obj_id, page_num=None, page_size=None, operator=None):
     return data
 
 
-@onlyone.lock(RoleModModel.model_sign, 'role_id:mod_id', 'role_id:mod_id', 30)
+@onlyone.lock(RoleModModel.model_sign, 'obj_id:mod_id', 'obj_id:mod_id', 30)
+def set_role_mod(obj_id, mod_id, status, operator=None):
+    '''
+    设置角色模块
+    '''
+    data = {}
+    if status == 'create':
+        data = create_role_mod(obj_id, mod_id, operator)
+    elif status == 'delete':
+        data = delete_role_mod(obj_id, mod_id, operator)
+    return data
+
+
 def create_role_mod(role_id, mod_id, operator=None):
     '''
     创建角色关联模块
@@ -170,7 +182,6 @@ def create_role_mod(role_id, mod_id, operator=None):
     return data
 
 
-@onlyone.lock(RoleModModel.model_sign, 'role_id:mod_id', 'role_id:mod_id', 30)
 def delete_role_mod(role_id, mod_id, operator=None):
     '''
     删除角色关联模块
@@ -184,6 +195,13 @@ def delete_role_mod(role_id, mod_id, operator=None):
         raise errors.CommonError('角色未关联此模块')
     with transaction.atomic():
         base_ctl.delete_obj(RoleModModel, obj.id, operator)
+        query = {
+            'role_id': role_id,
+            'permission__mod_id': mod_id,
+        }
+        batch_ids = RolePermissionModel.objects.filter(**query).values_list('id', flat=True).all()
+        if batch_ids:
+            base_ctl.delete_objs(RolePermissionModel, list(set(batch_ids)))
 
 
 def get_role_mods(obj_id, page_num=None, page_size=None, operator=None):
@@ -206,7 +224,19 @@ def get_role_mods(obj_id, page_num=None, page_size=None, operator=None):
     return data
 
 
-@onlyone.lock(RolePermissionModel.model_sign, 'role_id:permission_id', 'role_id:permission_id', 30)
+@onlyone.lock(RolePermissionModel.model_sign, 'obj_id:permission_id', 'obj_id:permission_id', 30)
+def set_role_permission(obj_id, permission_id, status, operator=None):
+    '''
+    设置角色权限
+    '''
+    data = {}
+    if status == 'create':
+        data = create_role_permission(obj_id, permission_id, operator)
+    elif status == 'delete':
+        data = delete_role_permission(obj_id, permission_id, operator)
+    return data
+
+
 def create_role_permission(role_id, permission_id, operator=None):
     '''
     创建角色关联权限
@@ -231,7 +261,6 @@ def create_role_permission(role_id, permission_id, operator=None):
     return data
 
 
-@onlyone.lock(RolePermissionModel.model_sign, 'role_id:permission_id', 'role_id:permission_id', 30)
 def delete_role_permission(role_id, permission_id, operator=None):
     '''
     删除角色关联权限
@@ -266,6 +295,21 @@ def get_role_permissions(obj_id, page_num=None, page_size=None, operator=None):
     return data
 
 
+def get_role_mod_permission(obj_id, operator=None):
+    '''
+    获取角色关联模块与权限
+    '''
+    mod_ids = RoleModModel.objects.filter(role_id=obj_id)\
+            .values_list('mod_id', flat=True).all()
+    permission_ids = RolePermissionModel.objects.filter(role_id=obj_id)\
+            .values_list('permission_id', flat=True).all()
+    data = {
+        'mod_ids': list(set(mod_ids)),
+        'permission_ids': list(set(permission_ids)),
+    }
+    return data
+
+
 def get_roles_by_ids(obj_ids, operator=None):
     '''
     根据角色ID列表获取角色列表
@@ -289,7 +333,7 @@ def get_mods_by_user_id(user_id, operator=None):
     根据user_id获取模块列表
     '''
     role_ids = get_role_ids_by_user_id(user_id)
-    mod_ids = RoleModModel.objects.filter(role_id__in=role_ids).all()
+    mod_ids = RoleModModel.objects.filter(role_id__in=role_ids).values_list('mod_id', flat=True).all()
     mods = ModModel.objects.filter(id__in=mod_ids).all()
     return mods
 
@@ -299,6 +343,7 @@ def get_permissions_by_user_id(user_id, operator=None):
     根据user_id获取权限列表
     '''
     role_ids = get_role_ids_by_user_id(user_id)
-    permission_ids = RolePermissionModel.objects.filter(role_id__in=role_ids).all()
+    permission_ids = RolePermissionModel.objects.filter(role_id__in=role_ids)\
+            .values_list('permission_id', flat=True).all()
     permissions = PermissionModel.objects.filter(id__in=permission_ids).all()
     return permissions

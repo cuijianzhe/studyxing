@@ -105,11 +105,9 @@ class BaseApi(View):
         for k, v in request.GET.items():
             data[k] = v
         # 再解析body中的参数，存在相同参数时，以body中为准
-
         if request.body:
             data.update(json.loads(request.body))
         print(data)
-
         for key in self.need_params.keys():
             value = data.get(key)
             name, condition = self.need_params.get(key)

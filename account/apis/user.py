@@ -16,6 +16,7 @@ class LoginApi(BaseApi):
 
 
 class LogoutApi(BaseApi):
+    NEED_PERMISSION = False
 
     need_params = {
     }
@@ -96,6 +97,7 @@ class CurrentUserApi(BaseApi):
         params['obj_id'] = request.user_id
         data = user_ctl.get_user_info(**params)
         return data
+
 
 class ListUserRoleApi(BaseApi):
     NEED_PERMISSION = False
