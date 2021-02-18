@@ -39,6 +39,17 @@ INSTALLED_APPS = [
     'account',
     'business.project',
     'business.service',
+    'asset.manager',
+    'asset.ecs',
+    'asset.slb',
+    'asset.rds',
+    'asset.redis',
+    'asset.mongo',
+    'asset.domain',
+    'asset.rocket',
+    'scheduler',
+    'component.gitlab',
+    'component.jenkins',
 ]
 
 MIDDLEWARE = [
