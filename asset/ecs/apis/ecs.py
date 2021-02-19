@@ -14,6 +14,7 @@ class EcsApi(BaseApi):
 
 
 class ListEcsApi(BaseApi):
+    # NEED_LOGIN = False
     NEED_PERMISSION = False
 
     need_params = {
@@ -40,7 +41,7 @@ class ListEcsServiceApi(BaseApi):
 
 
 class SyncEcsApi(BaseApi):
-
+    NEED_LOGIN = False
     need_params = {
     }
     def post(self, request, params):
