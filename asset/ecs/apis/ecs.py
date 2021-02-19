@@ -14,7 +14,6 @@ class EcsApi(BaseApi):
 
 
 class ListEcsApi(BaseApi):
-    # NEED_LOGIN = False
     NEED_PERMISSION = False
 
     need_params = {

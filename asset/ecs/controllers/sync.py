@@ -7,7 +7,7 @@ from asset.manager.controllers import aliyun_key as aliyun_key_ctl
 from asset.manager.controllers import region as region_ctl
 from base import controllers as base_ctl
 from base import errors
-from utils.aliyun import AliyunECS
+from utils.aliyun.ecs import AliyunECS
 from utils.time_utils import str2datetime_by_format
 
 
@@ -70,7 +70,6 @@ def sync_ecses():
     existed_ids = []
     # 记录需要新创建的ECS信息，用于批量创建
     ecs_list = []
-    print('这是需要创建的ecs',ecs_list)
     # 每次使用都先使用默认的地域初始化，其实可以在类里增加默认值，但是没有增加默认值是为了更明确知道在干什么
     ali_cli = AliyunECS(key, secret, 'cn-beijing')
     for region in regions:
